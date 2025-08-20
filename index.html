@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PredAI-Supermarket Sales Forecasting</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===============================
+       GLOBAL STYLES
+       =============================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: myFirstFont;
+      min-height: 100vh;
+      color: #fff;
+
+      /* ✅ Background Image */
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url('https://images.pexels.com/photos/2387819/pexels-photo-2387819.jpeg') no-repeat center center/cover;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px 15px;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    /* ===============================
+       NAV BAR
+       =============================== */
+    /* Simple Navbar */
+    .navbar {
+      width: 100%;
+      border-radius: 9px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background: rgba(255, 255, 255, 0.08);
+      /* translucent */
+      backdrop-filter: blur(2px);
+      /* ✅ blur effect */
+      -webkit-backdrop-filter: blur(4px);
+      /* Safari support */
+      /* dark background */
+      color: white;
+      margin-bottom: 30px;
+      /* space below navbar */
+    }
+
+    /* Logo (left side) */
+    .nav-logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+    }
+
+    /* Links (right side) */
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      /* ✅ more space between links */
+    }
+
+    .nav-links a {
+      position: relative;
+      display: inline-block;
+      /* ✅ keeps underline inside */
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      color: white;
+      transition: color 0.3s, transform 0.3s;
+      padding-bottom: 5px;
+
+      /* space for underline */
+    }
+
+    /* Hover Effect */
+    .nav-links a:hover {
+      color: cyan;
+      transform: scale(1.1);
+      /* slight zoom */
+    }
+
+    /* Underline Effect (doesn't push content) */
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      /* stays inside link */
+      width: 0%;
+      height: 2px;
+      background: cyan;
+      transition: width 0.3s;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+      /* underline slides in */
+    }
+
+
+    /* ===============================
+       LOGO SECTION
+       =============================== */
+    .logo-section {
+      text-align: center;
+      margin-bottom: 30px;
+      cursor: pointer;
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 50%;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer ;
+      user-select: none;
+    }
+
+    .logo-text {
+      font-size: 28px;
+      font-weight: bold;
+      color: cyan;
+    }
+
+    .logo-subtitle {
+      font-size: 16px;
+      color: #ddd;
+    }
+
+    /* ===============================
+       CARD (FORM BOX) - GLASS STYLE
+       =============================== */
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      /* ✅ translucent */
+      backdrop-filter: blur(5px);
+      /* ✅ glass blur */
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      transition: 0.3s;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+    }
+
+    /* ===============================
+       FORM STYLES
+       =============================== */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+        /* stack on small screens */
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #eee;
+    }
+
+    input,
+    select {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.5);
+      /* ✅ semi-transparent */
+      color: white;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: cyan;
+      box-shadow: 0 0 8px cyan;
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    select option {
+      background: #000;
+      /* ✅ dark dropdown */
+      color: #fff;
+    }
+
+    /* ===============================
+       SECTION TITLES
+       =============================== */
+    .section-title {
+      font-size: 22px;
+      font-weight: bold;
+      color: cyan;
+      text-align: center;
+      margin: 20px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* ===============================
+       BUTTON
+       =============================== */
+    .predict-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      background: linear-gradient(90deg, cyan, magenta);
+      color: black;
+      text-transform: uppercase;
+      transition: 0.3s;
+    }
+
+    .predict-btn:hover {
+      background: linear-gradient(90deg, magenta, cyan);
+      color: white;
+    }
+
+    /* ===============================
+       RESULT BOX
+       =============================== */
+    .result-box {
+      background: rgba(0, 255, 100, 0.1);
+      border: 1px solid rgba(0, 255, 100, 0.3);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .result-amount {
+      font-size: 32px;
+      font-weight: bold;
+      color: #00ff88;
+      margin-top: 10px;
+    }
+
+    .error-box {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      color: #ff4d4d;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+    }
+
+    /* Apply to dropdowns */
+    /* Select box styling */
+    input,
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      /* softer border */
+      border-radius: 12px;
+
+      /* ✅ darker translucent glass look */
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(100%);
+      -webkit-backdrop-filter: blur(100%);
+
+      font-size: 16px;
+      color: #fff;
+      transition: all 0.3s ease;
+
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+
+    /* Hover/Focus for glass glow */
+    input:focus,
+    select:focus {
+      border-color: rgba(0, 255, 255, 0.6);
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
+    }
+
+    /* Dropdown options */
+    select option {
+      background: rgba(0, 0, 0, 0.9);
+      /* ✅ dark dropdown */
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      padding: 10px;
+      font-size: 12px;
+    }
+    #outletname{
+    margin-bottom: 20px;
+    }
+    .nav-logo{
+  font-family: "Orbitron", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+   color : #F5F5F5;
+}
+  </style>
+</head>
+
+<body>
+<!--&lt;!&ndash;  <script>&ndash;&gt;-->
+<!--&lt;!&ndash;    // Close popup when clicking OK&ndash;&gt;-->
+<!--&lt;!&ndash;    function closePopup() {&ndash;&gt;-->
+<!--&lt;!&ndash;      document.getElementById("welcomePopup").style.display = "none";&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // Show popup automatically when site loads&ndash;&gt;-->
+<!--&lt;!&ndash;    window.onload = function () {&ndash;&gt;-->
+<!--&lt;!&ndash;      document.getElementById("welcomePopup").style.display = "flex";&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+<!--&lt;!&ndash;  </script>&ndash;&gt;-->
+
+<!--  &lt;!&ndash; Popup Overlay &ndash;&gt;-->
+<!--  <div id="welcomePopup" class="popup-overlay">-->
+<!--    <div class="popup-box">-->
+<!--      <h2>⚡Website Under Process⚡</h2>-->
+<!--      <p>But, you can check some Features</p>-->
+<!--      <button onclick="closePopup()">OK</button>-->
+<!--    </div>-->
+<!--  </div>-->
+
+  <div class="container">
+    <!-- LOGO SECTION -->
+    <!-- <div class="logo-section"> -->
+    <!-- <div class="logo">📊</div> -->
+    <!-- <div class="logo-text">Sales Predictor</div> -->
+    <!-- <div class="logo-subtitle">AI-Powered Forecasting</div> -->
+    <!-- </div> -->
+    <!-- Simple Navigation Bar -->
+    <header class="navbar">
+<!--      <div class="nav-logo">📊 Sales Predictor</div>-->
+      <a href="/" class="nav-logo">PredAI</a>
+      <nav class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+      </nav>
+    </header>
+
+
+    <!-- PREDICTION RESULT -->
+ <!-- Prediction Result (Always Visible) -->
+<div class="result-box">
+  <h3>🎯 Predicted Sales</h3>
+  <div class="result-amount">$ <span id="predictedValue">
+    {% if prediction %}
+      0
+    {% else %}
+      0
+    {% endif %}
+  </span></div>
+  <p>Expected revenue for this product configuration</p>
+</div>
+
+{% if prediction %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let target = {{ prediction }};   // Flask/Jinja variable
+    let duration = 1000;             // 1 second
+    let frameRate = 60;              // 60 fps
+    let totalFrames = Math.round(duration / (1000 / frameRate));
+    let counter = 0;
+    let current = 0;
+
+    let step = target / totalFrames;
+
+    function updateCounter() {
+      current += step;
+      counter++;
+      if (counter < totalFrames) {
+        document.getElementById("predictedValue").innerText = current.toFixed(2);
+        requestAnimationFrame(updateCounter);
+      } else {
+        document.getElementById("predictedValue").innerText = target.toFixed(2);
+      }
+    }
+
+    updateCounter();
+  });
+</script>
+{% endif %}
+
+    <!-- INPUT FORM -->
+    <div class="card">
+      <form method="POST">
+        <!-- Product Information -->
+        <div class="section-title">📦 Product Information</div>
+<!--        <div class="form-group" id="outletname">-->
+<!--          <label>Outlet Name / Code</label>-->
+<!--          <input type="text" name="Outlet_Name" id="Outlet_Name" placeholder="BigMart Superstore" required>-->
+<!--        </div>-->
+
+        <script>
+          document.getElementById("Outlet_Name").addEventListener("input", function() {
+          this.value = this.value.toUpperCase();
+          });
+        </script>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Item Weight (kg)</label>
+            <input type="number" step="0.1" name="Item_Weight" placeholder="12.5" required>
+          </div>
+          <div class="form-group">
+            <label>Fat Content</label>
+            <select name="Item_Fat_Content" required>
+              <option value="option">Select</option>
+              <option value="Low Fat">Low Fat</option>
+              <option value="Regular">Regular</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Item Visibility</label>
+            <input type="number" step="0.001" name="Item_Visibility" placeholder="0.125" required>
+          </div>
+          <div class="form-group">
+            <label>Item Type</label>
+            <select name="Item_Type" required>
+              <option value=" " class="option">Select...</option>
+              <option value="Dairy">Dairy</option>
+              <option value="Fruits">Fruits</option>
+              <option value="Meat">Meat</option>
+              <option value="Beverages">Beverages</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Maximum Retail Price ($)</label>
+          <input type="number" step="0.01" name="Item_MRP" placeholder="150.50" required>
+        </div>
+
+        <!-- Outlet Information -->
+        <div class="section-title">🏪 Outlet Information</div>
+        <div class="form-group" id="outletname">
+          <label>Outlet Name / Code</label>
+          <input type="text" name="Outlet_Name" id="Outlet_Name" placeholder="Outlet Name / Code" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Outlet Size</label>
+            <select name="Outlet_Size" required>
+              <option value="option">Select...</option>
+              <option value="Small">Small</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Location Type</label>
+            <select name="Outlet_Location" required>
+              <option value="option">Select...</option>
+              <option value="Tier 1">Tier 1</option>
+              <option value="Tier 2">Tier 2</option>
+              <option value="Tier 3">Tier 3</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Outlet Type</label>
+          <select name="Outlet_Type" required>
+            <option value="option">Select...</option>
+            <option value="Grocery Store">Grocery Store</option>
+            <option value="Supermarket Type1">Supermarket Type 1</option>
+            <option value="Supermarket Type2">Supermarket Type 2</option>
+            <option value="Supermarket Type3">Supermarket Type 3</option>
+          </select>
+        </div>
+
+        <button type="submit" class="predict-btn">🔮 Predict Sales</button>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>
